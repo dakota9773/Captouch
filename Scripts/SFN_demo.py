@@ -61,7 +61,7 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
         try:
             line = ser.readline().decode('utf-8').strip()
             values = list(map(float, line.split(',')))
-            if len(values) == 24:  # Check for 24 values (updated to remove Etho_recording)
+            if len(values) == 25:
                 # Calculate deltas
                 deltas = []
                 for i in range(0, 24, 2):

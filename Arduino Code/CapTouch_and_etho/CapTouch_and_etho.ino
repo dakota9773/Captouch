@@ -38,7 +38,7 @@ void setup() {
     MPR121.setGlobalCDT(CDT_2US);
     digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
-    //MPR121.autoSetElectrodes();
+    MPR121.autoSetElectrodes();
     digitalWrite(LED_BUILTIN, LOW); 
 }
 
