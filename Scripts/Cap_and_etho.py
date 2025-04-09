@@ -46,9 +46,10 @@ def moving_average(buffer, new_value):
 
 def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                      ax, fig, counter1_text, counter2_text, timer1_text,
-                     timer2_text, delta1_index, delta2_index, graph_indices):
-    global delta1_counter, delta2_counter, delta1_timer, delta2_timer, delta1_start_time, delta2_start_time,\
-        delta1_touch_detected, delta2_touch_detected, latest_delta1, latest_delta2, latest_timestamp
+                     timer2_text, delta1_index, delta2_index, graph_indices,
+                     ethovision_text, ethovision_circle):
+    global delta1_counter, delta2_counter, delta1_timer, delta2_timer, delta1_start_time, delta2_start_time, \
+        delta1_touch_detected, delta2_touch_detected, latest_delta1, latest_delta2, latest_timestamp, ethovision_flag
 
     buffers = [collections.deque(maxlen=BUFFER_SIZE) for _ in range(13)]  # Updated to 13 buffers for 25 values
     while True:
@@ -57,7 +58,7 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
             values = list(map(float, line.split(',')))
             if len(values) == 25:
 
-
+                ethovision_flag = int(values[24])
 
                 deltas = []
                 for i in range(0, 24, 2):
@@ -81,7 +82,12 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                 latest_delta2 = round(delta2, 2)
                 latest_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-
+                if ethovision_flag == 1:
+                    canvas.itemconfig(ethovision_circle, state='normal', fill='red', outline='dark red')
+                    canvas.itemconfig(ethovision_text, state='normal', text="Ethovision Recording", fill='red')
+                else:
+                    canvas.itemconfig(ethovision_circle, state='hidden')
+                    canvas.itemconfig(ethovision_text, state='hidden')
 
 
                 # Touch detection for Delta 1
@@ -126,12 +132,12 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                         latest_delta2,
                         delta2_counter,
                         delta2_timer
-                        ])
+                    ])
                     print(time.time())
 
 
 
-    # Update the counters and timers on the canvas
+                # Update the counters and timers on the canvas
                 canvas.itemconfig(counter1_text, text=f"O1 Count: {delta1_counter}")
                 canvas.itemconfig(counter2_text, text=f"O2 Count: {delta2_counter}")
                 canvas.itemconfig(timer1_text, text=f"O1 Timer: {delta1_timer:.2f} sec")
@@ -238,6 +244,10 @@ def initialize_gui(delta1_index, delta2_index):
     delta1_text = canvas.create_text(325, 175, text="Delta 1: ", font=("Helvetica", 16))
     delta2_text = canvas.create_text(675, 175, text="Delta 2: ", font=("Helvetica", 16))
 
+    ethovision_circle = canvas.create_oval(820, 5, 840, 25, fill="red", state = "hidden")
+    ethovision_text = canvas.create_text(925, 15, text="Ethovision Recording", font=("Helvetica", 12), state = "hidden")
+
+
     # Counter and timer displays moved higher
     counter1_text = canvas.create_text(325, 325, text="O1 Count: 0", font=("Helvetica", 16))
     counter2_text = canvas.create_text(675, 325, text="O2 Count: 0", font=("Helvetica", 16))
@@ -338,7 +348,8 @@ def initialize_gui(delta1_index, delta2_index):
             serial.Serial(SERIAL_PORT, BAUD_RATE),
             canvas, delta1_text, delta2_text, circle1, circle2, ax, fig,
             counter1_text, counter2_text, timer1_text, timer2_text,
-            delta1_index, delta2_index, graph_indices
+            delta1_index, delta2_index, graph_indices,
+            ethovision_text, ethovision_circle
         )
     ).start()
 
@@ -354,7 +365,6 @@ def save_data():
             while data_queue:
                 writer.writerow(data_queue.popleft())
         print("Data saved successfully!")
-
 
 def main(delta1_index=None, delta2_index=None):
     if delta1_index is None or delta2_index is None:
