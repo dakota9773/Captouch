@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Canvas, ttk, simpledialog, filedialog
+from tkinter import ttk, filedialog
 import serial
 import threading
 import collections
@@ -8,9 +8,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import time
 import csv
 import datetime
-from PIL import Image, ImageTk
-
-# Your existing constants and global variables here
 
 SERIAL_PORT = 'COM22'
 BAUD_RATE = 9600
@@ -29,6 +26,8 @@ delta1_start_time = None
 delta2_start_time = None
 delta1_touch_detected = False
 delta2_touch_detected = False
+ethovision_flag_start = False
+ethovision_flag_curr = False
 
 # Variables to store the latest Delta values and timestamp
 latest_delta1 = 0.0
@@ -47,10 +46,10 @@ def moving_average(buffer, new_value):
 def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                      ax, fig, counter1_text, counter2_text, timer1_text,
                      timer2_text, delta1_index, delta2_index, graph_indices,
-                     ethovision_text, ethovision_circle):
+                     ethovision_text, ethovision_circle, timer_label):
     global delta1_counter, delta2_counter, delta1_timer, delta2_timer, delta1_start_time, delta2_start_time, \
-        delta1_touch_detected, delta2_touch_detected, latest_delta1, latest_delta2, latest_timestamp, ethovision_flag
-
+        delta1_touch_detected, delta2_touch_detected, latest_delta1, latest_delta2, latest_timestamp, ethovision_flag_start,\
+        ethovision_flag_curr, data_queue
     buffers = [collections.deque(maxlen=BUFFER_SIZE) for _ in range(13)]  # Updated to 13 buffers for 25 values
     while True:
         try:
@@ -58,7 +57,7 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
             values = list(map(float, line.split(',')))
             if len(values) == 25:
 
-                ethovision_flag = int(values[24])
+                ethovision_flag_start = int(values[24])
 
                 deltas = []
                 for i in range(0, 24, 2):
@@ -69,10 +68,6 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                 delta1 = smoothed_deltas[delta1_index]
                 delta2 = smoothed_deltas[delta2_index]
 
-                # Cap delta1 and delta2 values for graphing
-                delta1cap = max(-25, min(5, delta1))
-                delta2cap = max(-25, min(5, delta2))
-
                 # Update canvas text for deltas (uncapped)
                 canvas.itemconfig(delta1_text, text=f"O1 Delta (E{delta1_index:02}): {delta1:.2f}")
                 canvas.itemconfig(delta2_text, text=f"O2 Delta (E{delta2_index:02}): {delta2:.2f}")
@@ -82,7 +77,7 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                 latest_delta2 = round(delta2, 2)
                 latest_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-                if ethovision_flag == 1:
+                if ethovision_flag_start == 1:
                     canvas.itemconfig(ethovision_circle, state='normal', fill='red', outline='dark red')
                     canvas.itemconfig(ethovision_text, state='normal', text="Ethovision Recording", fill='red')
                 else:
@@ -92,14 +87,14 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
 
                 # Touch detection for Delta 1
                 if delta1 > DELTA_THRESHOLD1:
-                    canvas.itemconfig(circle1, fill='dark blue', outline='blue')  # Change to green
+                    canvas.itemconfig(circle1, fill='dark blue', outline='blue')
                     canvas.itemconfig(delta1_text, text=f"O1 Delta (E{delta1_index:02}): {delta1:.2f}")
                     if not delta1_touch_detected:
                         delta1_touch_detected = True
                         delta1_counter += 1
                         delta1_start_time = time.time()
                 elif delta1 <= DELTA_THRESHOLD1:
-                    canvas.itemconfig(circle1, fill='blue', outline='dark blue')  # Revert to orange initially
+                    canvas.itemconfig(circle1, fill='blue', outline='dark blue')
                     canvas.itemconfig(delta1_text, text=f"O1 Delta (E{delta1_index:02}): {delta1:.2f}")
                     if delta1_touch_detected:
                         delta1_touch_detected = False
@@ -107,7 +102,7 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
 
                 # Touch detection for Delta 2
                 if delta2 > DELTA_THRESHOLD1:
-                    canvas.itemconfig(circle2, fill='dark red', outline='red')  # Change to green
+                    canvas.itemconfig(circle2, fill='dark red', outline='red')
                     canvas.itemconfig(delta2_text, text=f"O2 Delta (E{delta2_index:02}): {delta2:.2f}")
                     if not delta2_touch_detected:
                         delta2_touch_detected = True
@@ -120,12 +115,26 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                         delta2_touch_detected = False
                         delta2_timer += time.time() - delta2_start_time
 
-                global data_queue, trial_started
+                def update_timer(timer_start):
+                    root = timer_label.winfo_toplevel()
+                    if not ethovision_flag_curr:
+                        timer_label.config(text="Trial Time: Not Started")
+                        return
+                    elapsed_time = int(time.time() - timer_start)  # Calculate elapsed time
+                    minutes = elapsed_time // 60
+                    seconds = elapsed_time % 60
+                    timer_label.config(text=f"Trial Time: {minutes:02d}:{seconds:02d}")
+                    root.after(1000, lambda: update_timer(timer_start))
 
-                if trial_started is True:
+
+                if ethovision_flag_start == 1 and ethovision_flag_curr is False:
+                    ethovision_flag_curr = True
+                    start_time = time.time()
+
+                if ethovision_flag_start == 1:
                     data_queue.append([
                         latest_timestamp,
-                        time.time(),
+                        (time.time() - start_time),
                         latest_delta1,
                         delta1_counter,
                         delta1_timer,
@@ -133,9 +142,11 @@ def read_from_serial(ser, canvas, delta1_text, delta2_text, circle1, circle2,
                         delta2_counter,
                         delta2_timer
                     ])
-                    print(time.time())
+                    update_timer(start_time)
 
-
+                if ethovision_flag_start == 0 and ethovision_flag_curr is True:
+                    ethovision_flag_curr = False
+                    save_data()
 
                 # Update the counters and timers on the canvas
                 canvas.itemconfig(counter1_text, text=f"O1 Count: {delta1_counter}")
@@ -254,57 +265,9 @@ def initialize_gui(delta1_index, delta2_index):
     timer1_text = canvas.create_text(325, 375, text="O1 Timer: 0.00 sec", font=("Helvetica", 16))
     timer2_text = canvas.create_text(675, 375, text="O2 Timer: 0.00 sec", font=("Helvetica", 16))
 
-    # Trial time input (Minutes and Seconds)
-    tk.Label(root, text="Enter Trial Time:").pack(pady=5)
-    trial_minutes_var = tk.StringVar()
-    trial_seconds_var = tk.StringVar()
-
-    frame = tk.Frame(root)
-    frame.pack()
-
-    tk.Label(frame, text="Minutes:").pack(side=tk.LEFT, padx=5)
-    trial_minutes_entry = tk.Entry(frame, textvariable=trial_minutes_var, width=5)
-    trial_minutes_entry.pack(side=tk.LEFT)
-
-    tk.Label(frame, text="Seconds:").pack(side=tk.LEFT, padx=5)
-    trial_seconds_entry = tk.Entry(frame, textvariable=trial_seconds_var, width=5)
-    trial_seconds_entry.pack(side=tk.LEFT)
-
-    global trial_started
-    trial_started = False
-    def start_trial():
-        global trial_started
-        try:
-            # Get minutes and seconds from the user and convert to total seconds
-            trial_minutes = int(trial_minutes_var.get()) if trial_minutes_var.get() else 0
-            trial_seconds = int(trial_seconds_var.get()) if trial_seconds_var.get() else 0
-            trial_time = trial_minutes * 60 + trial_seconds
-        except ValueError:
-            tk.messagebox.showerror("Input Error", "Please enter valid numbers for minutes and seconds!")
-            return
-        trial_started = True
-        print(f"Trial started: {trial_started}")
-        def countdown_timer():
-            nonlocal trial_time
-            global trial_started
-            while trial_time > 0:
-                timer_label.config(text=f"Time Remaining: {trial_time // 60}:{trial_time % 60:02d}")
-                root.update()
-                time.sleep(1)
-                trial_time -= 1
-            trial_started = False
-            print(f"Trial ended: {trial_started}")
-            timer_label.config(text="Trial Completed!")
-            save_data()
-
-        threading.Thread(target=countdown_timer).start()
-
     # Trial timer display
-    timer_label = tk.Label(root, text="Time Remaining: Not started", font=("Helvetica", 14))
+    timer_label = tk.Label(root, text="Trial Time: Not started", font=("Helvetica", 14))
     timer_label.pack(pady=5)
-
-    # Start trial button
-    tk.Button(root, text="Start Trial", command=start_trial, font=("Helvetica", 12), bg="green", fg="white").pack(pady=5)
 
     # Graph setup
     fig, ax = plt.subplots(figsize=(5, 4))
@@ -349,14 +312,13 @@ def initialize_gui(delta1_index, delta2_index):
             canvas, delta1_text, delta2_text, circle1, circle2, ax, fig,
             counter1_text, counter2_text, timer1_text, timer2_text,
             delta1_index, delta2_index, graph_indices,
-            ethovision_text, ethovision_circle
+            ethovision_text, ethovision_circle, timer_label
         )
     ).start()
 
     return root
 
 def save_data():
-    global trial_started
     file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
     if file_path:
         with open(file_path, mode="w", newline="") as file:
