@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1ff86dc3-1875-45b9-aa39-337eab6e32eb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/identify_electrodes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/initialize_cap_gui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/non_gui_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/touch_calculation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Arduino Code/CapTouch_and_etho/CapTouch_and_etho.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino Code/CapTouch_and_etho/CapTouch_and_etho.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Python Scripts/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Python Scripts/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cap_and_etho.py" beforeDir="false" afterPath="$PROJECT_DIR$/Cap_and_etho.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,18 +29,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "dakota9773"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;dakota9773&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/dakota9773/Captouch.git",
-    "accountId": "4a49c551-4c41-47a0-8b21-f74b6e91f7a3"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/dakota9773/Captouch.git&quot;,
+    &quot;accountId&quot;: &quot;4a49c551-4c41-47a0-8b21-f74b6e91f7a3&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>

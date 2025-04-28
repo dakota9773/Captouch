@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4364085e-b562-4ae8-9293-659bccba92ea" name="Changes" comment="" />
+    <list default="true" id="4364085e-b562-4ae8-9293-659bccba92ea" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../Scripts/identify_electrodes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Scripts/initialize_cap_gui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Scripts/non_gui_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Scripts/touch_calculation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Arduino Code/CapTouch_and_etho/CapTouch_and_etho.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino Code/CapTouch_and_etho/CapTouch_and_etho.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Scripts/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Scripts/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Scripts/Cap_and_etho.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Scripts/Cap_and_etho.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +28,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "dakota9773"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/dakota9773/Captouch.git",
+    "accountId": "4a49c551-4c41-47a0-8b21-f74b6e91f7a3"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -29,18 +49,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.Captouch_windows_interfact.executor": "Run",
-    "Python.SFN_demo.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.resize.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/dakot/OneDrive/Documents/GitHub/Captouch/Python Scripts/Captouch_windows_interfact.py"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.Captouch_windows_interfact.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SFN_demo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.resize.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/dakot/OneDrive/Documents/GitHub/Captouch/Python Scripts/Captouch_windows_interfact.py&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\dakot\OneDrive\Documents\GitHub\Captouch\Python Scripts" />
